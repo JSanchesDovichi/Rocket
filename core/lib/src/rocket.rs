@@ -517,6 +517,7 @@ impl Rocket<Build> {
         // Extract the configuration; initialize the logger.
         #[allow(unused_mut)]
         let mut config = Config::try_from(&self.figment).map_err(ErrorKind::Config)?;
+        
         crate::log::init(&config);
 
         // Check for safely configured secrets.

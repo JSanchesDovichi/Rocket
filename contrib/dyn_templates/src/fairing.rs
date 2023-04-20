@@ -54,7 +54,7 @@ impl Fairing for TemplateFairing {
     }
 
     async fn on_liftoff(&self, rocket: &Rocket<Orbit>) {
-        use rocket::{figment::Source, log::PaintExt, yansi::Paint};
+        use rocket::{figment::Source, log_utils::PaintExt, yansi::Paint};
 
         let cm = rocket.state::<ContextManager>()
             .expect("Template ContextManager registered in on_ignite");

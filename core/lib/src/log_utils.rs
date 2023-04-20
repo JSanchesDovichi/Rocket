@@ -3,6 +3,9 @@ use std::str::FromStr;
 use std::fmt;
 use serde::{de, Serialize, Serializer, Deserialize, Deserializer};
 
+#[derive(Debug)]
+pub struct RocketLogger;
+
 pub trait PaintExt {
     fn emoji(item: &str) -> Paint<&str>;
 }
@@ -35,6 +38,17 @@ impl From<LogLevel> for log::LevelFilter {
             LogLevel::Normal => log::LevelFilter::Info,
             LogLevel::Debug => log::LevelFilter::Trace,
             LogLevel::Off => log::LevelFilter::Off
+        }
+    }
+}
+
+impl From<LogLevel> for tracing::level_filters::LevelFilter {
+    fn from(level: LogLevel) -> Self {
+        match level {
+            LogLevel::Critical => tracing::level_filters::LevelFilter::WARN,
+            LogLevel::Normal => tracing::level_filters::LevelFilter::INFO,
+            LogLevel::Debug => tracing::level_filters::LevelFilter::TRACE,
+            LogLevel::Off => tracing::level_filters::LevelFilter::OFF
         }
     }
 }

@@ -20,7 +20,7 @@ rust-version = "1.56"
 all-features = true
 
 [features]
-default = ["http2"]
+default = ["http2", "tracing-logger"]
 tls = ["rocket_http/tls"]
 mtls = ["rocket_http/mtls", "tls"]
 http2 = ["rocket_http/http2"]
@@ -63,7 +63,7 @@ tokio-stream = { version = "0.1.6", features = ["signal", "time"] }
 state = "0.5.1"
 tracing = { version = "0.1.37" }
 tracing-subscriber = { version = "0.3.16", features = ["time"] }
-tracing-log = { version = "0.1.3", features = ["log-tracer"] }
+tracing-log = { version = "0.1.3", features = ["trace-logger"] }
 
 [dependencies.rocket_codegen]
 version = "=0.5.0-rc.3"
