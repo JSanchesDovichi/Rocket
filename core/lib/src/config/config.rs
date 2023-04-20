@@ -377,7 +377,7 @@ impl Config {
     }
 
     pub(crate) fn pretty_print(&self, figment: &Figment) {
-        use crate::log::PaintExt;
+        use crate::log_utils::PaintExt;
 
         fn bold<T: std::fmt::Display>(val: T) -> Paint<T> {
             Paint::default(val).bold()

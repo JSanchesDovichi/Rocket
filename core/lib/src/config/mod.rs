@@ -125,7 +125,7 @@ mod secret_key;
 #[doc(hidden)]
 pub use config::pretty_print_error;
 pub use config::Config;
-pub use crate::log::LogLevel;
+pub use crate::log_utils::LogLevel;
 pub use shutdown::Shutdown;
 pub use ident::Ident;
 
@@ -147,7 +147,7 @@ mod tests {
     use figment::{Figment, Profile};
     use pretty_assertions::assert_eq;
 
-    use crate::log::LogLevel;
+    use crate::log_utils::LogLevel;
     use crate::data::{Limits, ToByteUnit};
     use crate::config::Config;
 

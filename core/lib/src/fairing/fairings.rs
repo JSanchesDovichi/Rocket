@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use crate::{Rocket, Request, Response, Data, Build, Orbit};
 use crate::fairing::{Fairing, Info, Kind};
-use crate::log::PaintExt;
+use crate::log_utils::PaintExt;
 
 use yansi::Paint;
 

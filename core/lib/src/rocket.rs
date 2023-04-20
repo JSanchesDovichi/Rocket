@@ -15,7 +15,7 @@ use crate::phase::{Stateful, StateRef, State};
 use crate::http::uri::{self, Origin};
 use crate::http::ext::IntoOwned;
 use crate::error::{Error, ErrorKind};
-use crate::log::PaintExt;
+use crate::log_utils::PaintExt;
 
 /// The application server itself.
 ///

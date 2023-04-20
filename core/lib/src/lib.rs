@@ -116,8 +116,16 @@ pub use tokio;
 pub use figment;
 pub use time;
 
+pub mod log_utils;
+
 #[doc(hidden)]
+#[cfg(not(feature = "tracing-logger"))]
 #[macro_use] pub mod log;
+
+#[doc(hidden)]
+#[cfg(feature = "tracing-logger")]
+#[macro_use] pub mod tracing;
+
 #[macro_use] pub mod outcome;
 #[macro_use] pub mod data;
 #[doc(hidden)] pub mod sentinel;

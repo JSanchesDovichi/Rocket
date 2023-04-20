@@ -7,7 +7,7 @@ use yansi::Paint;
 use crate::{Rocket, Request, Response, Orbit, Config};
 use crate::fairing::{Fairing, Info, Kind};
 use crate::http::{Header, uncased::UncasedStr};
-use crate::log::PaintExt;
+use crate::log_utils::PaintExt;
 use crate::shield::*;
 
 /// A [`Fairing`] that injects browser security and privacy headers into all

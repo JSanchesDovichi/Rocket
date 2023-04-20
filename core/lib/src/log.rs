@@ -6,10 +6,13 @@ use std::sync::atomic::{AtomicBool, Ordering};
 
 use is_terminal::IsTerminal;
 use serde::{de, Serialize, Serializer, Deserialize, Deserializer};
-use yansi::Paint;
+//use yansi::Paint;
 
 /// Reexport the `log` crate as `private`.
 pub use log as private;
+use yansi::Paint;
+
+use crate::config::LogLevel;
 
 // Expose logging macros (hidden) for use by core/contrib codegen.
 macro_rules! define_log_macro {
@@ -68,6 +71,7 @@ macro_rules! write_out {
 #[derive(Debug)]
 struct RocketLogger;
 
+/*
 /// Defines the maximum level of log messages to show.
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
 pub enum LogLevel {
@@ -80,10 +84,13 @@ pub enum LogLevel {
     /// Shows nothing: "`"off"`".
     Off,
 }
+*/
 
+/*
 pub trait PaintExt {
     fn emoji(item: &str) -> Paint<&str>;
 }
+*/
 
 // Whether a record is a special `launch_{meta,info}!` record.
 fn is_launch_record(record: &log::Metadata<'_>) -> bool {
@@ -187,6 +194,7 @@ pub(crate) fn init(config: &crate::Config) {
     }
 }
 
+/*
 impl From<LogLevel> for log::LevelFilter {
     fn from(level: LogLevel) -> Self {
         match level {
@@ -246,7 +254,9 @@ impl<'de> Deserialize<'de> for LogLevel {
         ))
     }
 }
+*/
 
+/*
 impl PaintExt for Paint<&str> {
     /// Paint::masked(), but hidden on Windows due to broken output. See #1122.
     fn emoji(_item: &str) -> Paint<&str> {
@@ -254,3 +264,4 @@ impl PaintExt for Paint<&str> {
         #[cfg(not(windows))] { Paint::masked(_item) }
     }
 }
+*/
