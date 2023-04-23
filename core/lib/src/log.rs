@@ -1,21 +1,23 @@
 //! Rocket's logging infrastructure.
 
-use std::fmt;
+use std::{fmt, sync::{Arc, Mutex}};
 use std::str::FromStr;
 use std::sync::atomic::{AtomicBool, Ordering};
 
 use is_terminal::IsTerminal;
+use private::{Subscriber, span};
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 //use yansi::Paint;
 
 /// Reexport the `log` crate as `private`.
 #[cfg(not(feature = "tracing-logger"))]
 pub use log as private;
-use private::span;
+//use private::span;
 
 #[cfg(feature = "tracing-logger")]
 pub use tracing as private;
 
+use tracing_subscriber::Layer;
 use yansi::Paint;
 
 use crate::{config::LogLevel, log_utils::RocketLogger};
@@ -69,7 +71,6 @@ macro_rules! write_out {
     })
 }
 
-#[cfg(not(feature = "tracing-logger"))]
 #[cfg(any(debug_assertions, test, doctest))]
 macro_rules! write_out {
     ($($arg:tt)*) => (print!($($arg)*))
@@ -156,7 +157,10 @@ impl log::Log for RocketLogger {
 }
 
 pub(crate) fn init_default() {
-    crate::log::init(&crate::Config::debug_default())
+
+    crate::log::init(&crate::Config::debug_default());
+
+
 }
 
 #[cfg(not(feature = "tracing-logger"))]
@@ -187,7 +191,21 @@ pub(crate) fn init(config: &crate::Config) {
 #[cfg(feature = "tracing-logger")]
 pub(crate) fn init(config: &crate::Config) {
     use tracing::subscriber::set_global_default;
-    use tracing_subscriber::FmtSubscriber;
+    use tracing_subscriber::{
+        fmt::format,
+        prelude::{__tracing_subscriber_SubscriberExt, __tracing_subscriber_field_MakeExt},
+        util::SubscriberInitExt,
+        FmtSubscriber,
+    };
+
+    let formatter = format::debug_fn(|writer, field, value| {
+
+        write!(writer, "{} ", Paint::default("\t>>").bold());
+        write!(writer, "{:?} ", Paint::blue(value))
+    })
+    // Use the `tracing_subscriber::MakeFmtExt` trait to wrap the
+    // formatter so that a delimiter is added between fields.
+    .delimited(", ");
 
     let my_subscriber = FmtSubscriber::builder()
         .without_time()
@@ -196,9 +214,90 @@ pub(crate) fn init(config: &crate::Config) {
         .with_line_number(false)
         .with_target(false)
         .with_max_level(config.log_level)
+        .fmt_fields(formatter)
         .finish();
 
-        if let Err(e) = set_global_default(my_subscriber) {
-            tracing::warn!("Global subscriber already set: {e}");
-        }
+    if let Err(e) = set_global_default(my_subscriber) {
+        tracing::warn!("Global subscriber already set: {e}");
+    }
+
+    /*
+    if let Err(e) = tracing_subscriber::registry().with(RocketLogger).try_init() {
+        tracing::warn!("{e}");
+    }
+    */
+
+    //tracing::event!(tracing::Level::INFO, "NAni?");
 }
+
+
+
+/*
+#[cfg(feature = "tracing-logger")]
+impl<S> Layer<S> for RocketLogger
+where
+    S: tracing::Subscriber,
+{
+    fn on_event(
+        &self,
+        event: &tracing::Event<'_>,
+        _ctx: tracing_subscriber::layer::Context<'_, S>,
+    ) {
+        //println!("Got event!");
+        //println!("  level={:?}", event.metadata().level());
+        //println!("  target={:?}", event.metadata().target());
+        //println!("  name={:?}", event.metadata().name());
+
+        let mut visitor = CustomFormatter;
+        event.record(&mut visitor);
+    }
+}
+
+#[cfg(feature = "tracing-logger")]
+struct CustomFormatter;
+
+#[cfg(feature = "tracing-logger")]
+impl tracing::field::Visit for CustomFormatter {
+    /*
+    fn record_f64(&mut self, field: &tracing::field::Field, value: f64) {
+        println!("  field={} value={}", field.name(), value)
+    }
+
+    fn record_i64(&mut self, field: &tracing::field::Field, value: i64) {
+        println!("  field={} value={}", field.name(), value)
+    }
+
+    fn record_u64(&mut self, field: &tracing::field::Field, value: u64) {
+        println!("  field={} value={}", field.name(), value)
+    }
+
+    fn record_bool(&mut self, field: &tracing::field::Field, value: bool) {
+        println!("  field={} value={}", field.name(), value)
+    }
+    */
+
+    /*
+    fn record_str(&mut self, field: &tracing::field::Field, value: &str) {
+        //println!("  field={} value={}", field.name(), value)
+
+        write_out!("{}\n", Paint::yellow(value).wrap())
+    }
+    */
+
+    /*
+    fn record_error(
+        &mut self,
+        field: &tracing::field::Field,
+        value: &(dyn std::error::Error + 'static),
+    ) {
+        println!("  field={} value={}", field.name(), value)
+    }
+    */
+
+    fn record_debug(&mut self, field: &tracing::field::Field, value: &dyn std::fmt::Debug) {
+        //println!("{:?}", value)
+
+        write_out!("{:?}\n", Paint::default(value).wrap())
+    }
+}
+*/

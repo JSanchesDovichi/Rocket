@@ -182,7 +182,7 @@ impl Rocket<Build> {
     pub fn custom<T: Provider>(provider: T) -> Self {
         // We initialize the logger here so that logging from fairings and so on
         // are visible; we use the final config to set a max log-level in ignite
-        crate::log::init_default();
+        //crate::log::init_default();
 
         let rocket: Rocket<Build> = Rocket(Building {
             figment: Figment::from(provider),

@@ -554,7 +554,8 @@ impl<'r> FromRequest<'r> for &'r Config {
 pub fn pretty_print_error(error: figment::Error) {
     use figment::error::{Kind, OneOf};
 
-    crate::log::init_default();
+    //crate::log::init_default();
+
     error!("Rocket configuration extraction from provider failed.");
     for e in error {
         fn w<T: std::fmt::Display>(v: T) -> Paint<T> { Paint::white(v) }
